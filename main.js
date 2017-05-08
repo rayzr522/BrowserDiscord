@@ -83,14 +83,14 @@ function say(username, message, id) {
     }
 
     chatContainer.innerHTML += message + '<br/>';
-    chatContainer.scrollBy(0, 10e10);
+    chatContainer.scrollTop = chatContainer.scrollHeight + 1e3;
 }
 
 function logMessage(message) {
     let content = message.cleanContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     console.log(`[${message.author.username}] ${content}`);
-    say(message.author.username, content, message.author.id);
+    say(message.member.nickname || message.author.username, content, message.author.id);
 
     message.attachments.forEach(attachment => {
         if (/\.(png|jpg|jpeg|gif|webp)/gi.test(attachment.filename)) {
@@ -100,7 +100,7 @@ function logMessage(message) {
 }
 
 function sendMessage(message) {
-    if (!bot.targetChannel) {
+    if (!bot || !bot.targetChannel) {
         log('You must select a channel first!');
     } else {
         bot.targetChannel.sendMessage(message);
