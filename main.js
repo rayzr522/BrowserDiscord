@@ -83,12 +83,20 @@ function say(username, message, id) {
     }
 
     chatContainer.innerHTML += message + '<br/>';
-    chatContainer.scrollBy(0, 1e3);
+    chatContainer.scrollBy(0, 10e10);
 }
 
 function logMessage(message) {
-    console.log(`[${message.author.username}] ${message.cleanContent}`);
-    say(message.author.username, message.cleanContent, message.author.id);
+    let content = message.cleanContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    console.log(`[${message.author.username}] ${content}`);
+    say(message.author.username, content, message.author.id);
+
+    message.attachments.forEach(attachment => {
+        if (/\.(png|jpg|jpeg|gif|webp)/gi.test(attachment.filename)) {
+            chatContainer.innerHTML += `<img class="attachment" src="${attachment.proxyURL}" onclick="window.open('${attachment.url}').focus()"></img>`;
+        }
+    });
 }
 
 function sendMessage(message) {
