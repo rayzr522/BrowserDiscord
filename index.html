@@ -18,8 +18,24 @@
 
         <div id="channels"></div>
 
+        <hr/>
+
+        <input type="text" id="client-token" placeholder="Enter your client token here"></input>
+        <button onclick="updateToken()">Set Token</button>
+
         <script type="text/javascript" src="http://cdn.rawgit.com/hydrabolt/discord.js/webpack/discord.11.0.0.js"></script>
         <script type="text/javascript" src="main.js"></script>
+        <script type="text/javascript">
+            function updateToken() {
+                let token = $('#client-token').value;
+                if (!/[a-zA-Z0-9_\.]/.test(token)) {
+                    return log('Invalid token!');
+                }
+
+                ls('discord.token', $('#client-token').value);
+                main();
+            }
+        </script>
     </div>
 </body>
 

@@ -6,6 +6,18 @@ function $(query) {
     return result;
 }
 
+function mentionUser(id) {
+    let message = messageInput.value;
+    if (!message.endsWith(' ')) {
+        message += ' ';
+    }
+
+    message += `<@${id}> `;
+
+    messageInput.value = message;
+    messageInput.focus();
+}
+
 function qs(key, value) {
     let location = window.location.search;
     if (location.indexOf('?') < 0) return;
@@ -40,6 +52,13 @@ function qs(key, value) {
     return mapped[key];
 }
 
+function ls(key, value) {
+    if (!value) {
+        return localStorage.getItem(key);
+    }
+    return localStorage.setItem(key, value);
+}
+
 var bot;
 
 var chatContainer = $('#chat');
@@ -51,12 +70,25 @@ function log(message, level) {
 }
 
 let lastUser = null;
-function say(username, message) {
+function say(username, message, id) {
     if (lastUser !== username) {
         lastUser = username;
-        chatContainer.innerHTML += `<h4>${username}</h4>`;
+        let html = `<h4`;
+        if (id) {
+            html += ` onclick="mentionUser('${id}')"`;
+        }
+        html += `>${username}</h4>`;
+
+        chatContainer.innerHTML += html;
     }
+
     chatContainer.innerHTML += message + '<br/>';
+    chatContainer.scrollBy(0, 1e3);
+}
+
+function logMessage(message) {
+    console.log(`[${message.author.username}] ${message.cleanContent}`);
+    say(message.author.username, message.cleanContent, message.author.id);
 }
 
 function sendMessage(message) {
@@ -87,9 +119,15 @@ function updateChannels() {
 function setChannel(channel) {
     let newChannel = bot.targetChannel = bot.channels.get(channel);
 
-    qs('channel', channel);
+    ls('discord.channel', channel);
 
     log(`Connected to ${newChannel.guild.name} in #${newChannel.name} (${newChannel.id})`);
+    log('Loading history...');
+
+    newChannel.fetchMessages({ limit: 10 }).then(messages => {
+        log(`Loaded ${messages.size} messages`);
+        messages.array().reverse().forEach(logMessage);
+    });
 }
 
 function setupBot(token) {
@@ -108,11 +146,13 @@ function setupBot(token) {
     log('Client created');
 
     bot.on('ready', () => {
+        ls('token');
+
         updateChannels();
 
         log(`Connected as ${bot.user.username}#${bot.user.discriminator}`);
 
-        let channel = qs('channel');
+        let channel = ls('discord.channel') || qs('channel');
         if (channel) {
             setChannel(channel);
         }
@@ -122,23 +162,14 @@ function setupBot(token) {
         if (!bot.targetChannel) return;
 
         if (message.channel.id === bot.targetChannel.id) {
-            say(message.author.username, message.cleanContent);
+            logMessage(message);
         }
     });
 
     bot.login(token);
 }
 
-(function () {
-    let token = qs('token');
-    if (!token) {
-        return log('Please provide a bot token in the query string!');
-    }
-
-    setupBot(token);
-})();
-
-document.onkeyup = function (event) {
+messageInput.onkeyup = function (event) {
     if (event.keyCode === 13) {
         let message = messageInput.value;
         messageInput.value = '';
@@ -148,3 +179,14 @@ document.onkeyup = function (event) {
         }
     }
 }
+
+function main() {
+    let token = ls('discord.token') || qs('token');
+    if (!token) {
+        return log('Please set a bot token!');
+    }
+
+    setupBot(token);
+}
+
+main();
