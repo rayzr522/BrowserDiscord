@@ -1,0 +1,17 @@
+{
+  "name": "browser-discord",
+  "version": "1.0.0",
+  "description": "A custom Browser-based Discord client - entirely clientside",
+  "main": "index.js",
+  "repository": "https://github.com/Rayzr522/BrowserDiscord.git",
+  "author": "Rayzr522 <rayzr522@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "gulp"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "webpack": "^2.6.1",
+    "webpack-stream": "^3.2.0"
+  }
+}

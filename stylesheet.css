@@ -8,53 +8,107 @@ body {
     display: none;
 }
 
-button, input, pre {
-    background: #fdfdfd;
-    padding: 15px;
-    border: 1px solid #bbb;
-    border-radius: 10px;
+#splash {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    margin: 0px;
+    text-align: center;
+    background: #3f3f3f;
 }
 
-input {
-    height: 50px;
-    padding-top: 25px;
-    padding-bottom: 25px;
-    margin-bottom: 10px;
+#splash>span {
+    font-size: 80px;
+    font-weight: 800;
+    line-height: 100vh;
+    color: white;
 }
 
-input:focus {
-    outline-style: none;
-    box-shadow: inset 0px 0px 5px #33bbff;
+.message {
+    display: block;
+    font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    padding: 5px;
 }
 
-#message {
-    width: 100%;
+.message-name {
+    font-weight: 800;
 }
 
-#client-token {
-    width: 250px;
+.message-attachment {
+    height: auto;
+    max-width: 50%;
 }
 
-.attachment {
-    height: 250px;
-    width: auto;
+.guild-icon, .channel {
+    display: block;
 }
 
-pre {
-    padding: 15px;
-    white-space: pre-wrap;
+.guild-icon {
+    margin: 15px;
+    width: 50px;
 }
 
-button {
-    box-shadow: inset 0px 2px 3px #88bbff;
-    transition: 0.3s;
+.channel {
+    padding: 10px 5px;
 }
 
-button:hover {
-    box-shadow: inset 0px 4px 5px #88bbff;
+.emoji {
+    display: inline;
+    width: 24px;
+}
+
+.column {
+    display: inline-block;
+    margin: 0px;
+    padding: 25px;
+    height: 800px;
+    overflow-y: auto;
+}
+
+a {
+    color: blue;
+    text-decoration: underline;
+}
+
+#guilds, #channels {
+    float: left;
+}
+
+#channels {
+    background: #ddd;
+}
+
+#chat-container {
+    background: #ccc;
+    float: center;
+    padding: 0px;
+    width: 50%;
+    position: relative;
 }
 
 #chat {
-    height: 500px;
-    overflow-y: auto;
+    margin: 15px;
+    display: block;
+    width: 95%;
+}
+
+#message-input {
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+    border: none;
+    border-top: 1px solid gray;
+    background: none;
+    padding: 25px 10px;
+    margin: 0px;
+    font-size: 14px;
+}
+
+#token-input {
+    display: block;
+    width: 100%;
 }
