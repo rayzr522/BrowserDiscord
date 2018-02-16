@@ -83,7 +83,7 @@ class View {
                 if (this.targetGuild === guild.id) {
                     html += ` guild-icon-selected`;
                 }
-                html += `" onclick="bot.setGuild('${guild.id}')" src="${guild.iconURL || '//placehold.it/250'}"></img>`;
+                html += `" onclick="bot.setGuild('${guild.id}')" src="${guild.iconURL() || '//placehold.it/250'}"></img>`;
             });
 
         this.guildContainer.innerHTML = html;
@@ -91,8 +91,8 @@ class View {
 
     updateChannels() {
         console.log('Updating channels...');
-        if (!this.targetChannel) {
-            console.error('No target channel!');
+        if (!this.targetGuild) {
+            console.error('No target guild!');
             return;
         }
 

@@ -206,7 +206,7 @@ class View {
                 if (this.targetGuild === guild.id) {
                     html += ` guild-icon-selected`;
                 }
-                html += `" onclick="bot.setGuild('${guild.id}')" src="${guild.iconURL || '//placehold.it/250'}"></img>`;
+                html += `" onclick="bot.setGuild('${guild.id}')" src="${guild.iconURL() || '//placehold.it/250'}"></img>`;
             });
 
         this.guildContainer.innerHTML = html;
@@ -214,8 +214,8 @@ class View {
 
     updateChannels() {
         console.log('Updating channels...');
-        if (!this.targetChannel) {
-            console.error('No target channel!');
+        if (!this.targetGuild) {
+            console.error('No target guild!');
             return;
         }
 
@@ -332,9 +332,10 @@ const View = __webpack_require__(1);
 class Bot {
     constructor(token) {
         if (!token) {
-            return log('Please set a bot token!');
+            return console.log('Please set a bot token!');
         }
 
+        storage.ls('discord.token', token);
         this.token = token;
 
         this.view = new View(this);
@@ -356,6 +357,7 @@ class Bot {
 
         this.client.on('ready', () => {
             this.view.hideSplash();
+            this.view.updateGuilds();
             this.view.updateChannels();
 
             console.log(`Connected as ${this.client.user.username}#${this.client.user.discriminator} (${this.client.user.id})`);
@@ -383,11 +385,11 @@ class Bot {
     }
 
     setGuild(guild) {
-        if (this.targetGuild === guild) {
+        if (this.targetGuild && this.targetGuild.id === guild) {
             return;
         }
 
-        let newGuild = this.targetGuild = this.client.guilds.get(guild);
+        this.targetGuild = this.client.guilds.get(guild);
 
         storage.ls('discord.guild', guild);
 
@@ -396,7 +398,7 @@ class Bot {
     }
 
     setChannel(channel) {
-        if (this.targetChannel === channel) {
+        if (this.targetChannel && this.targetChannel.id === channel) {
             return;
         }
 
@@ -410,7 +412,7 @@ class Bot {
         storage.ls('discord.channel', channel);
 
         console.log('Fetching messages...');
-        newChannel.fetchMessages({ limit: 10 }).then(messages => {
+        newChannel.messages.fetch({ limit: 10 }).then(messages => {
             messages.array().reverse().forEach(message => {
                 this.view.displayMessage(message);
             });
@@ -418,15 +420,15 @@ class Bot {
     }
 
     sendMessage(message) {
-        if (!bot.client || !bot.targetChannel) {
+        if (!this.client || !this.targetChannel) {
             console.log('You must select a channel first!');
         } else {
-            bot.targetChannel.sendMessage(message);
+            this.targetChannel.send(message);
         }
     }
 }
 
-window.bot = window.bot || new Bot(storage.ls('discord.token') || storage.qs('token'));
+window.bot = window.bot || new Bot(storage.ls('discord.token') || storage.qs('token') || prompt('Please enter a token:'));
 
 /***/ })
 /******/ ]);
