@@ -326,7 +326,7 @@ const View = __webpack_require__(1);
 class Bot {
     constructor(token) {
         if (!token) {
-            return log('Please set a bot token!');
+            return log('Please set a user token!');
         }
 
         this.token = token;
